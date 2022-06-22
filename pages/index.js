@@ -9,12 +9,14 @@ export default function Home() {
     const [file, setFile] = useState(null);
     const [res, setRes] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     function handleSelectFile(e) {
         setFile(e.target.files[0]);
     }
 
     function upload() {
+        setLoading(true);
         const formdata = new FormData();
         formdata.append("file", file, file?.name);
         // formdata.append("file", strblob, "file.txt");
@@ -31,6 +33,7 @@ export default function Home() {
                 const data = result.split("\n");
                 // console.log(data[0]);
                 setRes(JSON.parse(data[0]));
+                setLoading(false);
             })
             .catch((error) => console.log("error", error));
     }
@@ -74,7 +77,10 @@ export default function Home() {
                                 <div className="stat-title flex place-content-end">File size</div>
                                 <div className="stat-value flex place-content-end">{humanSize(file.size)}</div>
                                 <div className="stat-actions  flex place-content-end">
-                                    <button className="btn btn-sm btn-success mr-2" onClick={upload}>
+                                    <button
+                                        className={`btn btn-sm btn-success mr-2 ${loading && "loading"}`}
+                                        onClick={upload}
+                                    >
                                         Upload
                                     </button>
                                     <button className="btn btn-sm btn-error" onClick={() => setFile(null)}>
