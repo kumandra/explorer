@@ -1,7 +1,24 @@
-import '../styles/globals.css'
+import React, { useState, useEffect } from "react";
+import { ThemeProvider, useTheme } from "next-themes";
+import "../styles/globals.css";
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+export function SafeHydrate({ children }) {
+    const [isSSR, setIsSSR] = useState(true);
+    useEffect(() => {
+        setIsSSR(false);
+    }, []);
+    return <div suppressHydrationWarning>{!isSSR && children}</div>;
 }
 
-export default MyApp
+function MyApp({ Component, pageProps }) {
+    const { theme, setTheme } = useTheme();
+    return (
+        <SafeHydrate>
+            <ThemeProvider attribute="data-theme" enableSystem={true} defaultTheme="dark">
+                <Component {...pageProps} />;
+            </ThemeProvider>
+        </SafeHydrate>
+    );
+}
+
+export default MyApp;
